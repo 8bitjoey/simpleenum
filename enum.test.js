@@ -43,6 +43,8 @@ test('ensure enums doesn\'t share items', () => {
     expect(MyEnum1.X.id).toBe(MyEnum2.X.id);
     expect(MyEnum1.X.name).toBe(MyEnum2.X.name);
     expect(MyEnum1.X.extra).not.toBe(MyEnum2.X.extra);
+
+    expect(MyEnum1.X).toBe(MyEnum1.X);
 });
 
 test('ensure enums have expected inheritance', () => {
