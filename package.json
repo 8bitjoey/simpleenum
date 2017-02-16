@@ -1,0 +1,14 @@
+{
+  "name": "simpleenum",
+  "version": "1.0.0",
+  "description": "A package with base Enum class, which can be used to create enum-like classes in JavaScript.",
+  "main": "enum.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "8bitjoey",
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^18.1.0"
+  }
+}
