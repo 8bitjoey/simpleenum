@@ -76,10 +76,6 @@ class Enum {
      * @param {*[]|null} [extra] extra values stored in enums
      */
     static createEnum(items, extra = null) {
-        if (this.name == 'Enum') {
-            throw new IllegalArgumentException('Can\'t create enums for Enum class');
-        }
-
         if (extra && !Array.isArray(extra)) {
             throw new IllegalArgumentException('Extra params should be an array or null');
         }
@@ -88,16 +84,16 @@ class Enum {
             throw new IllegalArgumentException('Extra params should be an array of the same length as enum has or null');
         }
 
-        let newEnum = this;
+        let newEnum = class extends this {};
         let valueToEnumMap = {};
         let nameToEnumMap = {};
 
         Object.keys(items).map((id, index) => {
             let name = items[id];
-            let enumInstance = new this(parseInt(id), name, Array.isArray(extra) ? extra[index] : null);
+            let enumInstance = new newEnum(parseInt(id), name, Array.isArray(extra) ? extra[index] : null);
             newEnum[name.toUpperCase()] = enumInstance;
             valueToEnumMap[id] = enumInstance;
-            nameToEnumMap[name] = enumInstance;
+            nameToEnumMap[name.toUpperCase()] = enumInstance;
         });
 
         // Define non-writable, non-enumerable properties
@@ -105,7 +101,7 @@ class Enum {
         Object.defineProperty(newEnum, 'nameToEnumMap', {value: nameToEnumMap});
 
         return Object.freeze(newEnum);
-    }
+    };
 }
 
 module.exports = {
