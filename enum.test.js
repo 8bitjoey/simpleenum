@@ -3,7 +3,7 @@ const Enum = enumlib.Enum;
 const InvalidArgumentException = enumlib.InvalidArgumentException;
 
 test('creating new enum', () => {
-    let MyEnum1 = Enum.createEnum({1: 'mercury', 3: 'earth', 5: 'saturn'});
+    let MyEnum1 = Enum.create({'mercury': 1, 'earth': 3, 'saturn': 5});
 
     expect(MyEnum1.MERCURY.value).toBe(1);
     expect(MyEnum1.EARTH.value).toBe(3);
@@ -17,7 +17,7 @@ test('creating new enum', () => {
     // expect(MyEnum1.name).toBe('MyEnum1');
 
     let xExtra = {'foo': 'bar'};
-    let MyEnum2 = Enum.createEnum({1: 'x', 2: 'y', 3: 'z'}, [xExtra, 10, 'hello']);
+    let MyEnum2 = Enum.create({'x': 1, 'y': 2, 'z': 3}, [xExtra, 10, 'hello']);
 
     expect(MyEnum2.X.value).toBe(1);
     expect(MyEnum2.Y.value).toBe(2);
@@ -35,8 +35,8 @@ test('creating new enum', () => {
 test('ensure enums doesn\'t share items', () => {
     let extra1 = {};
     let extra2 = {};
-    let MyEnum1 = Enum.createEnum({1: 'x', 2: 'y', 3: 'z'}, [extra1, null, null]);
-    let MyEnum2 = Enum.createEnum({1: 'x', 2: 'y', 3: 'z'}, [extra2, null, null]);
+    let MyEnum1 = Enum.create({'x': 1, 'y': 2, 'z': 3}, [extra1, null, null]);
+    let MyEnum2 = Enum.create({'x': 1, 'y': 2, 'z': 3}, [extra2, null, null]);
 
     expect(MyEnum1).not.toBe(MyEnum2);
     expect(MyEnum1.X).not.toBe(MyEnum2.X);
@@ -48,8 +48,8 @@ test('ensure enums doesn\'t share items', () => {
 });
 
 test('ensure enums have expected inheritance', () => {
-    let MyEnumA = Enum.createEnum({1: 'x', 2: 'y', 3: 'z'});
-    let MyEnumBInstance = Enum.createEnum({1: 'x', 2: 'y', 3: 'z'});
+    let MyEnumA = Enum.create({'x': 1, 'y': 2, 'z': 3});
+    let MyEnumBInstance = Enum.create({'x': 1, 'y': 2, 'z': 3});
 
     // MyEnumA and MyEnumB are just frozen holders of enums, they're not Enums themselves
     expect(MyEnumA).not.toBeInstanceOf(Enum);
@@ -75,40 +75,40 @@ test('ensure enums have expected inheritance', () => {
     });
 });
 
-test('createEnum has to have correct extra argument', () => {
-    expect(() => Enum.createEnum({1: 'x'}))
+test('create has to have correct extra argument', () => {
+    expect(() => Enum.create({'x': 1}))
         .not.toThrow();
-    expect(() => Enum.createEnum({1: 'x'}, null))
+    expect(() => Enum.create({'x': 1}, null))
         .not.toThrow();
-    expect(() => Enum.createEnum({1: 'x'}, ['hello']))
+    expect(() => Enum.create({'x': 1}, ['hello']))
         .not.toThrow();
-    expect(() => Enum.createEnum({1: 'x'}, 'hello'))
+    expect(() => Enum.create({'x': 1}, 'hello'))
         .toThrow(InvalidArgumentException);
-    expect(() => Enum.createEnum({1: 'x'}, 'hello'))
+    expect(() => Enum.create({'x': 1}, 'hello'))
         .toThrow('Extra params should be an array or null');
 
-    expect(() => Enum.createEnum({1: 'x', 2: 'y'}))
+    expect(() => Enum.create({'x': 1, 'y': 2}))
         .not.toThrow();
-    expect(() => Enum.createEnum({1: 'x', 2: 'y'}, null))
+    expect(() => Enum.create({'x': 1, 'y': 2}, null))
         .not.toThrow();
-    expect(() => Enum.createEnum({1: 'x', 2: 'y'}, ['hello', 'world']))
+    expect(() => Enum.create({'x': 1, 'y': 2}, ['hello', 'world']))
         .not.toThrow();
-    expect(() => Enum.createEnum({1: 'x', 2: 'y'}, ['hello']))
+    expect(() => Enum.create({'x': 1, 'y': 2}, ['hello']))
         .toThrow(InvalidArgumentException);
-    expect(() => Enum.createEnum({1: 'x', 2: 'y'}, ['hello']))
+    expect(() => Enum.create({'x': 1, 'y': 2}, ['hello']))
         .toThrow('Extra params should be an array of the same length as enum has or null');
-    expect(() => Enum.createEnum({1: 'x', 2: 'y'}, ['hello', 'world', '!']))
+    expect(() => Enum.create({'x': 1, 'y': 2}, ['hello', 'world', '!']))
         .toThrow(InvalidArgumentException);
-    expect(() => Enum.createEnum({1: 'x', 2: 'y'}, ['hello', 'world', '!']))
+    expect(() => Enum.create({'x': 1, 'y': 2}, ['hello', 'world', '!']))
         .toThrow('Extra params should be an array of the same length as enum has or null');
-    expect(() => Enum.createEnum({1: 'x', 2: 'y'}, 'hello', 'world'))
+    expect(() => Enum.create({'x': 1, 'y': 2}, 'hello', 'world'))
         .toThrow(InvalidArgumentException);
-    expect(() => Enum.createEnum({1: 'x', 2: 'y'}, 'hello', 'world'))
+    expect(() => Enum.create({'x': 1, 'y': 2}, 'hello', 'world'))
         .toThrow('Extra params should be an array or null');
 });
 
 test('Enum.valueOf', () => {
-    let Foo = Enum.createEnum({1: 'UPPERCASE', 2: 'lowercase'});
+    let Foo = Enum.create({'UPPERCASE': 1, 'lowercase': 2});
 
     expect(Foo.UPPERCASE).toBe(Foo.valueOf('uppercase'));
     expect(Foo.UPPERCASE).toBe(Foo.valueOf('UPPERCASE'));
@@ -120,12 +120,12 @@ test('Enum.valueOf', () => {
 });
 
 test('enum is not changeable', () => {
-    let Bar = Enum.createEnum({1: 'A', 2: 'B', 3: 'C'});
+    let Bar = Enum.create({'A': 1, 'B': 2, 'C': 3});
 
-    Bar.D = new Enum(4, 'D');
+    Bar.D = new Enum('D', 4);
     expect(Bar.D).toBeUndefined();
 
-    Bar.B = new Enum(10, 'X', 'test');
+    Bar.B = new Enum('X', 10, 'test');
     expect(Bar.B.value).toBe(2);
     expect(Bar.B.name).toBe('B');
     expect(Bar.B.extra).toBeNull();

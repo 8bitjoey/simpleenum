@@ -3,20 +3,20 @@ class IllegalArgumentException extends Error {}
 class Enum {
 
     /**
-     * @param {int} value
      * @param {string} name
+     * @param {int} value
      * @param {*} extra any extra parameter(s)
      */
-    constructor(value, name, extra) {
-        /**
-         * @var {int}
-         */
-        this._value = value;
-
+    constructor(name, value, extra) {
         /**
          * @var {string}
          */
         this._name = name;
+
+        /**
+         * @var {int}
+         */
+        this._value = value;
 
         /**
          * @var {*}
@@ -75,7 +75,7 @@ class Enum {
      * @param {Object.<int, string>} items
      * @param {*[]|null} [extra] extra values stored in enums
      */
-    static createEnum(items, extra = null) {
+    static create(items, extra = null) {
         if (extra && !Array.isArray(extra)) {
             throw new IllegalArgumentException('Extra params should be an array or null');
         }
@@ -88,11 +88,11 @@ class Enum {
         let valueToEnumMap = {};
         let nameToEnumMap = {};
 
-        Object.keys(items).map((id, index) => {
-            let name = items[id];
-            let enumInstance = new newEnum(parseInt(id), name, Array.isArray(extra) ? extra[index] : null);
+        Object.keys(items).map((name, index) => {
+            let value = items[name];
+            let enumInstance = new newEnum(name, value, Array.isArray(extra) ? extra[index] : null);
             newEnum[name.toUpperCase()] = enumInstance;
-            valueToEnumMap[id] = enumInstance;
+            valueToEnumMap[value] = enumInstance;
             nameToEnumMap[name.toUpperCase()] = enumInstance;
         });
 
