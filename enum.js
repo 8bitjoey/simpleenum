@@ -4,7 +4,7 @@ class Enum {
 
     /**
      * @param {string} name
-     * @param {int} value
+     * @param {string|int} value
      * @param {*} extra any extra parameter(s)
      */
     constructor(name, value, extra) {
@@ -14,7 +14,7 @@ class Enum {
         this._name = name;
 
         /**
-         * @var {int}
+         * @var {string|int}
          */
         this._value = value;
 
@@ -57,7 +57,7 @@ class Enum {
         switch (propertyType) {
             case 'string':
                 property = property.toUpperCase();
-                propertyToEnumMap = this.nameToEnumMap;
+                propertyToEnumMap = this.nameToEnumMap[property] ? this.nameToEnumMap : this.valueToEnumMap;
                 break;
 
             case 'number':
@@ -88,6 +88,7 @@ class Enum {
         let valueToEnumMap = {};
         let nameToEnumMap = {};
 
+        // TODO: use getValidPropertyName for prop names and add a test for that
         Object.keys(items).map((name, index) => {
             let value = items[name];
             let enumInstance = new newEnum(name, value, Array.isArray(extra) ? extra[index] : null);
@@ -108,4 +109,3 @@ module.exports = {
     'Enum': Enum,
     'IllegalArgumentException': IllegalArgumentException
 };
-

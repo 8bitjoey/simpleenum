@@ -30,9 +30,14 @@ Planets.MERCURY.value // 1
 let returnValue = planet => planet.value;
 returnValue(Planets.MARS) // 4
 
+Planets.valueOf(1) == Planets.MERCURY // true
+Planets.valueOf('mars') == Planets.MARS // true
+
 let ExtrasDemo = Enum.createEnum({'x': 1, 'y': 5}, [{description: 'Cool X'}, 'whatever']);
 ExtrasDemo.X.extra.description // 'Cool X'
 ExtrasDemo.Y.extra // 'whatever'
 ```
+
+Run ```npm test``` to run unit tests.
 
 License: MIT

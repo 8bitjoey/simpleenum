@@ -136,3 +136,5 @@ test('enum is not changeable', () => {
     Bar.A.value = -1;
     expect(Bar.A.value).toBe(1);
 });
+
+// TODO: test with string values
