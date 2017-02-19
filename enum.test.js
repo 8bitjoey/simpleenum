@@ -1,38 +1,45 @@
-const enumlib = require('./enum');
-const Enum = enumlib.Enum;
-const InvalidArgumentException = enumlib.InvalidArgumentException;
+const Enum = require('./enum');
+let exceptions = require('node-exceptions');
+let InvalidArgumentException = exceptions.InvalidArgumentException;
 
 test('creating new enum', () => {
-    let MyEnum1 = Enum.create({'mercury': 1, 'earth': 3, 'saturn': 5});
+    let MyEnum = Enum.create({'mercury': 1, 'earth': 3, 'saturn': 5});
 
-    expect(MyEnum1.MERCURY.value).toBe(1);
-    expect(MyEnum1.EARTH.value).toBe(3);
-    expect(MyEnum1.SATURN.value).toBe(5);
+    expect(MyEnum.MERCURY.value).toBe(1);
+    expect(MyEnum.EARTH.value).toBe(3);
+    expect(MyEnum.SATURN.value).toBe(5);
 
-    expect(MyEnum1.MERCURY.name).toBe('mercury');
-    expect(MyEnum1.EARTH.name).toBe('earth');
-    expect(MyEnum1.SATURN.name).toBe('saturn');
-
-    // may be requires babel to work
-    // expect(MyEnum1.name).toBe('MyEnum1');
-
-    let xExtra = {'foo': 'bar'};
-    let MyEnum2 = Enum.create({'x': 1, 'y': 2, 'z': 3}, [xExtra, 10, 'hello']);
-
-    expect(MyEnum2.X.value).toBe(1);
-    expect(MyEnum2.Y.value).toBe(2);
-    expect(MyEnum2.Z.value).toBe(3);
-
-    expect(MyEnum2.X.name).toBe('x');
-    expect(MyEnum2.Y.name).toBe('y');
-    expect(MyEnum2.Z.name).toBe('z');
-
-    expect(MyEnum2.X.extra).toBe(xExtra);
-    expect(MyEnum2.Y.extra).toBe(10);
-    expect(MyEnum2.Z.extra).toBe('hello');
+    expect(MyEnum.MERCURY.name).toBe('mercury');
+    expect(MyEnum.EARTH.name).toBe('earth');
+    expect(MyEnum.SATURN.name).toBe('saturn');
 });
 
-test('ensure enums doesn\'t share items', () => {
+test('creating new enum with extra', () => {
+    let xExtra = {'foo': 'bar'};
+    let MyEnum = Enum.create({'x': 1, 'y': 2, 'z': 3}, [xExtra, 10, 'hello']);
+
+    expect(MyEnum.X.value).toBe(1);
+    expect(MyEnum.Y.value).toBe(2);
+    expect(MyEnum.Z.value).toBe(3);
+
+    expect(MyEnum.X.name).toBe('x');
+    expect(MyEnum.Y.name).toBe('y');
+    expect(MyEnum.Z.name).toBe('z');
+
+    expect(MyEnum.X.extra).toBe(xExtra);
+    expect(MyEnum.Y.extra).toBe(10);
+    expect(MyEnum.Z.extra).toBe('hello');
+});
+
+test('ensure enum has only keys for given names', () => {
+    let MyEnum = Enum.create({'x': 1, 'y': 2, 'z': 3});
+
+    expect(Object.keys(MyEnum)).toEqual(expect.arrayContaining(['X', 'Y', 'Z']));
+    expect(Object.keys(MyEnum)).not.toContain('valueToEnumMap');
+    expect(Object.keys(MyEnum)).not.toContain('nameToEnumMap');
+});
+
+test('ensure enums don\'t share items', () => {
     let extra1 = {};
     let extra2 = {};
     let MyEnum1 = Enum.create({'x': 1, 'y': 2, 'z': 3}, [extra1, null, null]);
@@ -49,11 +56,11 @@ test('ensure enums doesn\'t share items', () => {
 
 test('ensure enums have expected inheritance', () => {
     let MyEnumA = Enum.create({'x': 1, 'y': 2, 'z': 3});
-    let MyEnumBInstance = Enum.create({'x': 1, 'y': 2, 'z': 3});
+    let MyEnumB = Enum.create({'x': 1, 'y': 2, 'z': 3});
 
     // MyEnumA and MyEnumB are just frozen holders of enums, they're not Enums themselves
     expect(MyEnumA).not.toBeInstanceOf(Enum);
-    expect(MyEnumBInstance).not.toBeInstanceOf(Enum);
+    expect(MyEnumB).not.toBeInstanceOf(Enum);
 
     // But all fields in MyEnumA and MyEnumB are Enum instances
     // You can also do
@@ -65,13 +72,13 @@ test('ensure enums have expected inheritance', () => {
     Object.keys(MyEnumA).map((key) => {
         expect(MyEnumA[key]).toBeInstanceOf(MyEnumA);
         expect(MyEnumA[key]).toBeInstanceOf(Enum);
-        expect(MyEnumA[key]).not.toBeInstanceOf(MyEnumBInstance);
+        expect(MyEnumA[key]).not.toBeInstanceOf(MyEnumB);
     });
 
-    Object.keys(MyEnumBInstance).map((key) => {
-        expect(MyEnumBInstance[key]).toBeInstanceOf(MyEnumBInstance);
-        expect(MyEnumBInstance[key]).toBeInstanceOf(Enum);
-        expect(MyEnumBInstance[key]).not.toBeInstanceOf(MyEnumA);
+    Object.keys(MyEnumB).map((key) => {
+        expect(MyEnumB[key]).toBeInstanceOf(MyEnumB);
+        expect(MyEnumB[key]).toBeInstanceOf(Enum);
+        expect(MyEnumB[key]).not.toBeInstanceOf(MyEnumA);
     });
 });
 
@@ -119,6 +126,21 @@ test('Enum.valueOf', () => {
     expect(Foo.LOWERCASE).toBe(Foo.valueOf(2));
 });
 
+test('Enum.valueOf for enum with string values', () => {
+    let Bar = Enum.create({'X': 1, 'Y': 'X', 'A': 'B'});
+
+    expect(Bar.Y).toBe(Bar.valueOf('Y'));
+    expect(Bar.Y).toBe(Bar.valueOf('y'));
+
+    expect(Bar.X).toBe(Bar.valueOf('x'));
+    expect(Bar.X).toBe(Bar.valueOf('X'));
+
+    expect(Bar.A).toBe(Bar.valueOf('a'));
+    expect(Bar.A).toBe(Bar.valueOf('A'));
+    expect(Bar.A).toBe(Bar.valueOf('b'));
+    expect(Bar.A).toBe(Bar.valueOf('B'));
+});
+
 test('enum is not changeable', () => {
     let Bar = Enum.create({'A': 1, 'B': 2, 'C': 3});
 
@@ -137,4 +159,63 @@ test('enum is not changeable', () => {
     expect(Bar.A.value).toBe(1);
 });
 
-// TODO: test with string values
+test('creating enums with non valid property names', () => {
+    // valid property name - is a name which is available as CreatedEnum.<propertyName>
+    // non-valid one - is a name which is only available as CreatedEnum[propertyName]
+
+    let MyEnum = Enum.create({'X x': 1, '123': 2, '$x': 3, '$123': 4, 'X/Y': 5, 'X-Z': 6});
+
+    expect(MyEnum.X_X.name).toBe('X x');
+    expect(MyEnum.___.name).toBe('123');
+    expect(MyEnum.$X.name).toBe('$x');
+    expect(MyEnum.$123.name).toBe('$123');
+    expect(MyEnum.X_Y.name).toBe('X/Y');
+    expect(MyEnum.X_Z.name).toBe('X-Z');
+});
+
+test('creating enums with non valid property names which cause property duplicates', () => {
+    expect(() => Enum.create({'X x': 1, 'X/X': 2})).toThrow(InvalidArgumentException);
+    expect(() => Enum.create({'X x': 1, 'X/X': 2}))
+        .toThrow('Some names turn to be the same after making them valid JS IdentifierName');
+});
+
+test('ensure valueOf works fine with invalid property names', () => {
+    let MyEnum = Enum.create({'X x': 1});
+
+    expect(MyEnum.X_X).toBe(MyEnum.valueOf(1));
+    expect(MyEnum.X_X).toBe(MyEnum.valueOf('x x'));
+    expect(MyEnum.X_X).toBe(MyEnum.valueOf('X X'));
+
+    expect(() => MyEnum.valueOf('X_X')).toThrow(InvalidArgumentException);
+    expect(() => MyEnum.valueOf('X_X')).toThrow('No enum with specified name');
+});
+
+test('ensure inheritance of Enum class works fine', () => {
+    class DescriptionEnum extends Enum {
+        constructor(...args) {
+            super(...args);
+            if (!this._extra || !this.extra.description) {
+                throw new InvalidArgumentException('Description is a required property of an extra');
+            }
+        }
+
+        get description() {
+            return this._extra.description;
+        }
+    }
+
+    expect(() => DescriptionEnum.create({'Add': 1, 'Remove': 2})).toThrow(InvalidArgumentException);
+    expect(() => DescriptionEnum.create({'Add': 1, 'Remove': 2})).toThrow('Description is a required property of an extra');
+
+    let MyDescriptionEnum = DescriptionEnum.create({'Add': 1}, [{description: 'Adds something'}]);
+
+    expect(MyDescriptionEnum).not.toBeInstanceOf(MyDescriptionEnum);
+    expect(MyDescriptionEnum).not.toBeInstanceOf(DescriptionEnum);
+    expect(MyDescriptionEnum).not.toBeInstanceOf(Enum);
+
+    expect(MyDescriptionEnum.ADD).toBeInstanceOf(MyDescriptionEnum);
+    expect(MyDescriptionEnum.ADD).toBeInstanceOf(DescriptionEnum);
+    expect(MyDescriptionEnum.ADD).toBeInstanceOf(Enum);
+
+    expect(MyDescriptionEnum.ADD.description).toBe('Adds something');
+});

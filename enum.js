@@ -1,4 +1,17 @@
-class IllegalArgumentException extends Error {}
+let exceptions = require('node-exceptions');
+let InvalidArgumentException = exceptions.InvalidArgumentException;
+
+/**
+ * @param {string} name
+ * @returns {string}
+ */
+let getValidPropertyName = (name) => {
+    name = name.replace(/^[^A-Za-z$_]+/, function(match) {
+        return new Array(match.length + 1).join('_');
+    });
+
+    return name.replace(/[^a-z0-9$_]/ig, '_');
+};
 
 class Enum {
 
@@ -48,7 +61,7 @@ class Enum {
     /**
      * @param {string|int} property
      * @return {Enum}
-     * @throws {IllegalArgumentException}
+     * @throws {InvalidArgumentException}
      */
     static valueOf(property) {
         let propertyType = typeof property;
@@ -68,31 +81,35 @@ class Enum {
             return propertyToEnumMap[property];
         }
 
-        throw new IllegalArgumentException('No constant with specified name');
+        throw new InvalidArgumentException('No enum with specified name');
     }
 
     /**
-     * @param {Object.<int, string>} items
+     * @param {Object.<string, string|int>} items
      * @param {*[]|null} [extra] extra values stored in enums
      */
     static create(items, extra = null) {
         if (extra && !Array.isArray(extra)) {
-            throw new IllegalArgumentException('Extra params should be an array or null');
+            throw new InvalidArgumentException('Extra params should be an array or null');
         }
 
         if (Array.isArray(extra) && extra.length != Object.keys(items).length) {
-            throw new IllegalArgumentException('Extra params should be an array of the same length as enum has or null');
+            throw new InvalidArgumentException('Extra params should be an array of the same length as enum has or null');
         }
 
         let newEnum = class extends this {};
         let valueToEnumMap = {};
         let nameToEnumMap = {};
 
-        // TODO: use getValidPropertyName for prop names and add a test for that
-        Object.keys(items).map((name, index) => {
+        Object.keys(items).map((/** string */name, index) => {
+            let propertyName = getValidPropertyName(name.toUpperCase());
+            if (newEnum.hasOwnProperty(propertyName)) {
+                throw new InvalidArgumentException('Some names turn to be the same after making them valid JS IdentifierName');
+            }
+
             let value = items[name];
             let enumInstance = new newEnum(name, value, Array.isArray(extra) ? extra[index] : null);
-            newEnum[name.toUpperCase()] = enumInstance;
+            newEnum[propertyName] = enumInstance;
             valueToEnumMap[value] = enumInstance;
             nameToEnumMap[name.toUpperCase()] = enumInstance;
         });
@@ -105,7 +122,4 @@ class Enum {
     };
 }
 
-module.exports = {
-    'Enum': Enum,
-    'IllegalArgumentException': IllegalArgumentException
-};
+module.exports = Enum;
