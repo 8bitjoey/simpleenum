@@ -14,5 +14,9 @@
   },
   "dependencies": {
     "node-exceptions": "^1.0.3"
+  },
+  "jest": {
+    "collectCoverage": true,
+    "collectCoverageFrom": ["enum.js"]
   }
 }
