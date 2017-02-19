@@ -7,7 +7,7 @@
   "scripts": {
     "test": "jest"
   },
-  "author": "8bitjoey",
+  "author": "Alexey Starshinov <8bitjoey@gmail.com>",
   "license": "MIT",
   "devDependencies": {
     "jest": "^18.1.0"

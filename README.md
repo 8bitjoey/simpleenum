@@ -1,11 +1,16 @@
 # simpleenum
 A package with base Enum class, which can be used to create enum-like classes in JavaScript
 
+Installation:
+
+```
+npm install --save simpleenum
+```
+
 Usage examples:
 
 ```
-let e = require('./enum')
-let Enum = e.Enum;
+let Enum = require('simpleenum')
 
 let Planets = Enum.create({'mercury': 1, 'venus': 2, 'Mars': 4});
 
@@ -17,11 +22,17 @@ isVenus('foo') // 'No'
 Planets.VENUS instanceof Planets // true
 Planets.VENUS instanceof Enum // true
 
-let isVenusEx2 = (planet) => { if (planet instanceof Planets) { return planet == Planets.VENUS ? 'Yes' : 'No'} else { return 'Not even a planet'; }};
+let isVenus2 = (planet) => {
+    if (planet instanceof Planets) {
+        return planet == Planets.VENUS ? 'Yes' : 'No'
+    } else {
+        return 'Not even a planet'; 
+    }
+};
 
-isVenusEx2(Planets.MARS) // 'No'
-isVenusEx2(Planets.VENUS) // 'YES'
-isVenusEx2('foo') // 'Not even a planet'
+isVenus2(Planets.MARS) // 'No'
+isVenus2(Planets.VENUS) // 'Yes'
+isVenus2('foo') // 'Not even a planet'
 
 Planets.MARS.name // Mars
 Planets.VENUS.name // venus
@@ -38,6 +49,6 @@ ExtrasDemo.X.extra.description // 'Cool X'
 ExtrasDemo.Y.extra // 'whatever'
 ```
 
-Run ```npm test``` to run unit tests.
+You can find more usage examples in unit tests. Run ```npm test``` to run them.
 
 License: MIT
