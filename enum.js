@@ -70,8 +70,13 @@ class Enum {
 
         switch (propertyType) {
             case 'string':
-                property = property.toUpperCase();
-                propertyToEnumMap = this.nameToEnumMap[property] ? this.nameToEnumMap : this.valueToEnumMap;
+                let upperCasedProperty = property.toUpperCase();
+                if (this.nameToEnumMap[upperCasedProperty]) {
+                    property = upperCasedProperty;
+                    propertyToEnumMap = this.nameToEnumMap;
+                } else {
+                    propertyToEnumMap = this.valueToEnumMap;
+                }
                 break;
 
             case 'number':
@@ -88,13 +93,14 @@ class Enum {
     /**
      * @param {Object.<string, string|int>} items
      * @param {*[]|null} [extra] extra values stored in enums
+     * @returns {{}}
      */
     static create(items, extra = null) {
         if (extra && !Array.isArray(extra)) {
             throw new InvalidArgumentException('Extra params should be an array or null');
         }
 
-        if (Array.isArray(extra) && extra.length != Object.keys(items).length) {
+        if (Array.isArray(extra) && extra.length !== Object.keys(items).length) {
             throw new InvalidArgumentException('Extra params should be an array of the same length as enum has or null');
         }
 

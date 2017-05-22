@@ -150,7 +150,7 @@ describe('Enum.valueOf', () => {
     });
 
     test('Working with string values', () => {
-        let Bar = Enum.create({'X': 1, 'Y': 'X', 'A': 'B'});
+        let Bar = Enum.create({'X': 1, 'Y': 'X', 'A': 'b', 'D': 'E'});
 
         expect(Bar.Y).toBe(Bar.valueOf('Y'));
         expect(Bar.Y).toBe(Bar.valueOf('y'));
@@ -161,7 +161,12 @@ describe('Enum.valueOf', () => {
         expect(Bar.A).toBe(Bar.valueOf('a'));
         expect(Bar.A).toBe(Bar.valueOf('A'));
         expect(Bar.A).toBe(Bar.valueOf('b'));
-        expect(Bar.A).toBe(Bar.valueOf('B'));
+        expect(() => Bar.valueOf('B')).toThrow(InvalidArgumentException);
+        expect(() => Bar.valueOf('B')).toThrow('No enum with specified name');
+
+        expect(Bar.D).toBe(Bar.valueOf('E'));
+        expect(() => Bar.valueOf('e')).toThrow(InvalidArgumentException);
+        expect(() => Bar.valueOf('e')).toThrow('No enum with specified name');
     });
 });
 

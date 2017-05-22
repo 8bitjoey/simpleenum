@@ -1,6 +1,6 @@
 {
   "name": "simpleenum",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "A package with base Enum class, which can be used to create enum-like classes in JavaScript.",
   "repository": "https://github.com/8bitjoey/simpleenum",
   "main": "enum.js",
